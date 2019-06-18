@@ -1,4 +1,3 @@
-#coding:utf-8
 import os
 from flask import current_app, render_template
 from sqlalchemy import *
@@ -15,7 +14,7 @@ def _exist_config(app):
 
 def create_config(username, password, host, db):
     data = render_template("admin/start/config.html", username=username,
-        password=password, host=host, db = db)
+                           password=password, host=host, db=db)
     filename = '{}/config.py'.format(current_app.root_path)
     fd = open(filename, "w")
     fd.write(data)
@@ -45,7 +44,7 @@ def connect_mysql(url):
         connection = engine.connect()
     except Exception as e:
         if isinstance(e, ImportError):
-            raise(e)
+            raise (e)
         msg = e._message()
         code, _ = e.orig.args
         return code, msg
@@ -74,6 +73,3 @@ def set_site(app):
     metas = SiteMeta.all()
     metas = dict([(meta.name, meta.value) for meta in metas])
     app.site = metas
-
-
-

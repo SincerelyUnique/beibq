@@ -1,4 +1,3 @@
-#coding: utf-8
 from flask import current_app, render_template, flash
 from flask_login import login_required
 from app.admin import admin
@@ -23,4 +22,3 @@ def site():
     metas = SiteMeta.all()
     site = dict([(meta.name, meta.value) for meta in metas])
     return render_template("admin/site/site.html", form=form, site=site)
-

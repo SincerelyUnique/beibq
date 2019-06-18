@@ -1,8 +1,7 @@
-#coding: utf-8
 from urllib import request, parse
 import requests
 import shutil
-import gzip, io 
+import gzip, io
 
 
 def check_gzip(response, html):
@@ -16,9 +15,9 @@ def check_gzip(response, html):
 
 def open_url(url):
     header = {
-        'User-Agent':'Mozilla/5.0 (Windows NT 6.2; rv:16.0) Gecko/20100101 Firefox/16.0',
-        'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Connection':'keep-alive'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; rv:16.0) Gecko/20100101 Firefox/16.0',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Connection': 'keep-alive'
     }
     req = request.Request(url, headers=header)
     req.add_header('Accept-encoding', 'gzip')
@@ -30,18 +29,18 @@ def open_url(url):
 
 def post_url(url, data):
     header = {
-        'User-Agent':'Mozilla/5.0 (Windows NT 6.2; rv:16.0) Gecko/20100101 Firefox/16.0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; rv:16.0) Gecko/20100101 Firefox/16.0',
     }
-    req = request.Request(url, headers = header)
+    req = request.Request(url, headers=header)
     data = parse.urlencode(data)
-    opener = request.build_opener(request.HTTPCookieProcessor()) 
+    opener = request.build_opener(request.HTTPCookieProcessor())
     response = opener.open(req, data)
     return response.read()
 
 
 def download_file(url, filename):
     try:
-        req = requests.get(url, stream = True, timeout = 3)
+        req = requests.get(url, stream=True, timeout=3)
     except:
         return False
     if req.status_code == 200:
@@ -72,5 +71,3 @@ def full_url(url, src):
         url = parse.urlparse(url)
         src = u"{0}:{1}".format(url.scheme, src)
     return src
- 
-

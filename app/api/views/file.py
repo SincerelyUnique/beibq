@@ -1,5 +1,4 @@
-#coding: utf-8
-from flask import current_app, request
+from flask import request
 from flask_login import current_user
 from app.models.book import *
 from app.includes import file
@@ -7,7 +6,7 @@ from . import dispatcher, message
 
 
 @dispatcher.auth_action("upload_image")
-def upload_image(catalog_id = None, filename=None, name=None, **params):
+def upload_image(catalog_id=None, filename=None, name=None, **params):
     name = name.replace("/", "")
     catalog = BookCatalog.get(catalog_id)
     if not catalog or catalog.book.user_id != current_user.id:
@@ -15,7 +14,7 @@ def upload_image(catalog_id = None, filename=None, name=None, **params):
     file.enable_image(filename)
     image = BookImage.add(catalog.book_id, filename, name)
     value = {
-        "id": image.id, 
+        "id": image.id,
         "url": image.url,
         "name": name
     }
@@ -42,7 +41,7 @@ def change_tmp(filename, **params):
         file.delete_tmp(filename)
     filename, name = file.new_tmp(image)
     url = "/".join(["/static", current_app.config["TMP_PATH"], filename])
-    value = {"url":url, "name": name}
+    value = {"url": url, "name": name}
     return message("success", value)
 
 
@@ -52,4 +51,3 @@ def delete_tmp(filename, **params):
         return message("error", "", "no filename")
     file.delete_tmp(filename)
     return message("success", "")
-

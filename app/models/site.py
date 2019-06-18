@@ -1,4 +1,3 @@
-#coding: utf-8
 from app.models.model import *
 from sqlalchemy.dialects.mysql import LONGTEXT
 

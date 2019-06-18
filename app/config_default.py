@@ -1,4 +1,4 @@
-#coding:utf-8
+
 
 class Config(object):
     DEBUG = False
@@ -23,6 +23,3 @@ class Config(object):
     IMAGE_PATH = "resource/image/image"
 
     BOOK_COVER_PATH = "resource/image/cover"
-
-
-

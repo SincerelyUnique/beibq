@@ -1,13 +1,11 @@
-#coding: utf-8
 import base64
-from flask import current_app
 from app.models.user import *
 from app.includes import file
 from . import dispatcher, message
 
 
 @dispatcher.auth_action("change_avatar")
-def change_avatar(id = None, binary = None, **params):
+def change_avatar(id=None, binary=None, **params):
     if not id or not binary:
         return message("error", "")
     user = User.get(id)
@@ -21,7 +19,7 @@ def change_avatar(id = None, binary = None, **params):
 
 
 @dispatcher.auth_action("change_password")
-def change_password(id = None, password= None, **params):
+def change_password(id=None, password=None, **params):
     if not id or not password:
         return message("error", "")
     user = User.get(id)
@@ -29,5 +27,3 @@ def change_password(id = None, password= None, **params):
         return message("error", "")
     user.change_password(password)
     return message("success", "")
-
-

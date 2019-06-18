@@ -1,4 +1,3 @@
-#coding:utf-8
 from flask import request, jsonify
 from flask_login import current_user
 from app.api import api
@@ -24,6 +23,7 @@ class Dispatcher(object):
                 raise ValueError("action is exists")
             self._funcs[name] = (fn, auth)
             return fn
+
         return decorate
 
     def dispatch(self, name, params):
@@ -48,5 +48,3 @@ def index(action):
 import app.api.views.book
 import app.api.views.file
 import app.api.views.user
-
-

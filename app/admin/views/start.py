@@ -1,5 +1,4 @@
-#coding:utf-8
-from flask import current_app, render_template, request, redirect, url_for, flash
+from flask import request, redirect, url_for, flash
 from app.models.model import db
 from flask_login import login_user, logout_user, login_required, current_user
 from app.admin import admin
@@ -10,12 +9,11 @@ from app.includes.start import *
 def setup_step2():
     form = ConfigForm()
     if form.validate_on_submit():
-        host= form.host.data
+        host = form.host.data
         username = form.username.data
         password = form.password.data
         db_name = form.db.data
-        url = 'mysql+pymysql://{0}:{1}@{2}/{3}?charset=utf8'.format(username,
-            password, host, db_name)
+        url = 'mysql+pymysql://{0}:{1}@{2}/{3}?charset=utf8'.format(username, password, host, db_name)
         code, msg = connect_mysql(url)
         if not code:
             create_config(username, password, host, db_name)
@@ -37,14 +35,14 @@ def setup():
         # 已经存在配置文件
         return render_template("admin/start/setup-error.html", code=0)
     step = request.args.get("step", type=int)
-    if step==1:
+    if step == 1:
         form = ConfigForm()
         return render_template("admin/start/setup-step1.html", form=form)
-    elif step==2:
+    elif step == 2:
         return setup_step2()
-    elif step==3:
+    elif step == 3:
         return setup_step3()
-    elif step==4:
+    elif step == 4:
         return setup_step4()
     return render_template("admin/start/setup.html")
 
@@ -67,7 +65,7 @@ def install_step1(form):
     return render_template("admin/start/install.html", form=form)
 
 
-@admin.route("/install", methods = ["GET", "POST"])
+@admin.route("/install", methods=["GET", "POST"])
 def install():
     if not exist_config():
         return redirect(url_for("admin.setup"))
@@ -77,9 +75,9 @@ def install():
         return render_template("admin/start/install-error.html", code=0)
     step = request.args.get("step", type=int)
     form = InstallForm()
-    if step==1:
+    if step == 1:
         return install_step1(form)
-    return render_template("admin/start/install.html", form = form)
+    return render_template("admin/start/install.html", form=form)
 
 
 @admin.route("/login", methods=["GET", "POST"])
@@ -94,8 +92,8 @@ def login():
             login_user(user, remember=form.remember.data)
             return redirect(url_for("admin.index"))
         flash("账号或密码错误")
-    form.remember.data=True
-    return render_template("admin/start/login.html", form = form)
+    form.remember.data = True
+    return render_template("admin/start/login.html", form=form)
 
 
 @admin.route("/logout")
@@ -103,5 +101,3 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("admin.login"))
-
-

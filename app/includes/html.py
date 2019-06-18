@@ -1,4 +1,3 @@
-#coding: utf-8
 import os, uuid
 from readability import Document
 from app.includes.url import open_url, full_url, download_file
@@ -43,10 +42,9 @@ def download_html_image(url, html, path):
 
 def html2markdown(html, url, download, path):
     if not download:
-        h = HTML2Text(baseurl = url, bodywidth = 0)
+        h = HTML2Text(baseurl=url, bodywidth=0)
     else:
         html = download_html_image(url, html, path)
-        h = HTML2Text(bodywidth = 0)
+        h = HTML2Text(bodywidth=0)
     md = h.handle(html)
     return md
-

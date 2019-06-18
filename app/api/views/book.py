@@ -1,4 +1,3 @@
-#coding: utf-8
 import base64, hashlib
 import simplejson as json
 from flask import current_app, url_for, render_template
@@ -15,8 +14,7 @@ def catalog2json(select_id, catalogs):
             "attrs": {"id": catalog.id},
             "title": catalog.title,
             "is_dir": catalog.is_dir,
-            "href": url_for("web.reader", id = catalog.book_id, 
-                        catalog_id=catalog.id)
+            "href": url_for("web.reader", id=catalog.book_id, catalog_id=catalog.id)
         }
         if select_id == catalog.id:
             item["selected"] = True
@@ -41,7 +39,7 @@ def edit_book(id=None, **params):
     if select_catalog:
         value["id"] = select_catalog.id
         value["markdown"] = select_catalog.markdown
-    value["publish"] = 0 if book.publish_timestamp>book.updatetime else 1
+    value["publish"] = 0 if book.publish_timestamp > book.updatetime else 1
     return message("success", value)
 
 
@@ -73,16 +71,16 @@ def rename_catalog(id=None, title="", **params):
     if not title:
         return message("error", "", "no title")
     catalog = BookCatalog.get(id)
-    if not catalog or catalog.book.user_id!=current_user.id:
+    if not catalog or catalog.book.user_id != current_user.id:
         return message("error", "", "id error")
     catalog.rename(title)
     return message("success", "")
 
- 
+
 @dispatcher.auth_action("delete_catalog")
 def delete_catalog(id=None, **params):
     catalog = BookCatalog.get(id)
-    if not catalog or catalog.book.user_id!=current_user.id:
+    if not catalog or catalog.book.user_id != current_user.id:
         return message("error", "", "id error")
     catalog.delete()
     return message("success", "")
@@ -91,30 +89,30 @@ def delete_catalog(id=None, **params):
 @dispatcher.auth_action("select_catalog")
 def select_catalog(id=None, **params):
     catalog = BookCatalog.query.filter_by(id=id).options(
-            db.undefer("markdown")
-        ).first()
+        db.undefer("markdown")
+    ).first()
     if not catalog or catalog.book.user_id != current_user.id:
         return message("error", "", "id error")
     catalog.book.select_catalog = catalog.id
     return message("success", {"markdown": catalog.markdown})
- 
+
 
 @dispatcher.auth_action("sort_catalog")
 def sort_catalog(id=None, next_id=None, **params):
     catalog = BookCatalog.get(id)
-    if not catalog or catalog.book.user_id!=current_user.id:
+    if not catalog or catalog.book.user_id != current_user.id:
         return message("error", "", "id error")
     if not catalog.sort(next_id):
         return message("error", "", "sort fail")
     return message("success", "")
- 
+
 
 @dispatcher.auth_action("diffsave_catalog")
-def diffsave_catalog(id=None, mdiff="", mtoken="", 
-        hdiff="", htoken="", **params):
+def diffsave_catalog(id=None, mdiff="", mtoken="",
+                     hdiff="", htoken="", **params):
     if not mdiff and not hdiff and not id:
         return message("error", "", "")
-    catalog = BookCatalog.query.filter_by(id = id).options(
+    catalog = BookCatalog.query.filter_by(id=id).options(
         db.undefer("markdown"), db.undefer("html")).first()
     if not catalog:
         return message("warning", "", "目录不存在")
@@ -158,14 +156,14 @@ def change_cover(id=None, binary=None, **params):
     binary = base64.b64decode(binary)
     cover = file.change_cover(binary, book.cover)
     book.cover = cover
-    src = "/".join(["/static", 
-        current_app.config["BOOK_COVER_PATH"], cover])
+    src = "/".join(["/static",
+                    current_app.config["BOOK_COVER_PATH"], cover])
     return message("success", {"src": src})
 
 
 @dispatcher.auth_action("import_html")
-def import_html(html = None, url=None, only_main=None, 
-        download = None, **params):
+def import_html(html=None, url=None, only_main=None,
+                download=None, **params):
     """ 导入html内容
     @param html: html内容
     @param url: 链接
@@ -180,8 +178,8 @@ def import_html(html = None, url=None, only_main=None,
     if html is None:
         return message("warning", "", "地址无法访问")
     html = html if not only_main else html_module.get_main_html(html)
-    markdown = html_module.html2markdown(html, url, download, 
-            current_app.config["IMAGE_PATH"])
+    markdown = html_module.html2markdown(html, url, download,
+                                         current_app.config["IMAGE_PATH"])
     return message("success", markdown)
 
 
@@ -192,6 +190,7 @@ def publish(id=None, **params):
         return message("error", "", "id error")
     book.publish()
     return message("success", "")
+
 
 @dispatcher.auth_action("delete_book")
 def delete_book(id=None, **params):
@@ -208,15 +207,15 @@ def reader(id=None, catalog_id=None, **params):
     if not book:
         return message("error", "", "no book")
     if not book.access and (not current_user.is_authenticated or \
-            (book.user_id != current_user.id)):
+                            (book.user_id != current_user.id)):
         return message("error", "", "no authority")
     catalog = BookCatalog.reader(book.id, catalog_id)
     if not catalog:
         return message("warning", "", "章节不存在")
     prev = BookCatalog.prev(catalog)
     next = BookCatalog.next(catalog)
-    html = render_template("web/_reader.html", book=book, catalog=catalog, 
-        prev=prev, next=next)
+    html = render_template("web/_reader.html", book=book, catalog=catalog,
+                           prev=prev, next=next)
     value = {
         "html": html,
         "id": catalog.id,
@@ -232,5 +231,3 @@ def book_info(id=None, **params):
         return message("error", "", "not book")
     html = render_template("web/_info.html", book=book)
     return message("success", html)
-
-

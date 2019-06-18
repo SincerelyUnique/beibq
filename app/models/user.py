@@ -1,11 +1,9 @@
-#coding: utf-8
 from datetime import datetime
 from app.models.model import *
 from flask_login import UserMixin
 from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.includes import file 
-
+from app.includes import file
 
 PREFIX = ""
 
@@ -18,15 +16,15 @@ class User(UserMixin, db.Model):
         "mysql_charset": "utf8"
     }
 
-    id = db.Column(db.Integer, primary_key = True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
     username = db.Column(db.String(255), unique=True, nullable=False, index=True, default="")
-    nickname = db.Column(db.String(255), nullable = False, default="")
-    password =  db.Column(db.String(255), default="")
-    avatar = db.Column(db.String(255),  default="")
-    updatetime = db.Column(db.DateTime, default = datetime.now, nullable=False)
-    timestamp = db.Column(db.DateTime, default = datetime.now, nullable=False)
+    nickname = db.Column(db.String(255), nullable=False, default="")
+    password = db.Column(db.String(255), default="")
+    avatar = db.Column(db.String(255), default="")
+    updatetime = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.now, nullable=False)
     books = db.relationship("Book", backref="user", lazy="dynamic")
-    
+
     @staticmethod
     def add(username, password):
         user = User.query.filter_by(username=username).first()
@@ -51,8 +49,8 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def page(page, per_page):
-        return User.query.paginate(page, 
-            per_page=per_page, error_out = False)
+        return User.query.paginate(page,
+                                   per_page=per_page, error_out=False)
 
     def setting(self, nickname):
         self.nickname = nickname
@@ -65,19 +63,19 @@ class User(UserMixin, db.Model):
 
     def page_book(self, page, per_page):
         from .book import Book
-        books = Book.query.filter_by(user_id=self.id)\
-            .options(db.Load(Book).undefer("brief"))\
-            .order_by(Book.publish_timestamp.desc())\
+        books = Book.query.filter_by(user_id=self.id) \
+            .options(db.Load(Book).undefer("brief")) \
+            .order_by(Book.publish_timestamp.desc()) \
             .paginate(page, per_page=per_page, error_out=False)
         return books
 
     def page_draft(self, page, per_page):
         from .book import Book
-        books = Book.query.filter_by(user_id=self.id)\
-                .filter(Book.updatetime>Book.publish_timestamp)\
-                .options(db.Load(Book).undefer("brief"))\
-                .order_by(Book.publish_timestamp.desc())\
-                .paginate(page, per_page=per_page, error_out=False)
+        books = Book.query.filter_by(user_id=self.id) \
+            .filter(Book.updatetime > Book.publish_timestamp) \
+            .options(db.Load(Book).undefer("brief")) \
+            .order_by(Book.publish_timestamp.desc()) \
+            .paginate(page, per_page=per_page, error_out=False)
         return books
 
     def count_book(self):
@@ -85,15 +83,15 @@ class User(UserMixin, db.Model):
 
     def count_draft(self):
         from .book import Book
-        num = Book.query.filter_by(user_id=self.id)\
-                .filter(Book.updatetime>Book.publish_timestamp)\
-                .count()
+        num = Book.query.filter_by(user_id=self.id) \
+            .filter(Book.updatetime > Book.publish_timestamp) \
+            .count()
         return num
 
     def _20px_avatar(self):
         image_path = current_app.config["AVATAR_PATH"]
         return "/".join([image_path, "20_20_{}".format(self.avatar)])
-    
+
     def _50px_avatar(self):
         image_path = current_app.config["AVATAR_PATH"]
         return "/".join([image_path, "50_50_{}".format(self.avatar)])
@@ -108,6 +106,3 @@ def load_user(id):
     if current_app.start:
         return User.query.get(int(id))
     return
-
-
-

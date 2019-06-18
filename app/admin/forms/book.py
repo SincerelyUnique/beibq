@@ -1,9 +1,7 @@
-#coding: utf-8
 from flask_wtf import Form
 from wtforms import StringField,RadioField
 from wtforms import TextAreaField
 from wtforms.validators import DataRequired, Length
-
 
 
 class BookForm(Form):
